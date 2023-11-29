@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\prodiController; 
 
 /*
 |--------------------------------------------------------------------------
@@ -42,4 +43,19 @@ Route::group(['middleware' => ['auth']], function () {
     Route::group(['middleware' => ['cek_login:user']], function () {
         Route::resource('user', UserController::class);
     });
+
+Route::get('/prodi', [ProdiController::class,'index'])->name('prodi.index');
+
+Route::get('/prodi/create', [ProdiController::class, 'create'])->name('prodi.create');
+Route::post('prodi/store', [ProdiController::class, 'store'])->name('prodi.store');
+
+Route::get('/prodi', [ProdiController::class,'index'])->name('prodi.index');
+Route::get('/prodi/{prodi}', [ProdiController::class, 'show'])->name('prodi.show');
+
+Route::get('/prodi/{prodi}/edit', [ProdiController::class, 'edit'])->name('prodi.edit');
+Route::patch('/prodi/{prodi}', [ProdiController::class, 'update'])->name('prodi.update');
+Route::delete('/prodi/{prodi}', [ProdiController::class, 'destroy'])->name('prodi.destroy');
+
+
 });
+
