@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
+use Dotenv\Exception\ValidationException;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException as ValidationValidationException;
 
 class RegisterController extends BaseController
 {
@@ -38,14 +41,34 @@ class RegisterController extends BaseController
     /** */
     public function login(Request $request)
     {
-        if(Auth::attempt(['email' => $request->email, 'password' => $request->password])){
-            $user = Auth::user();
-            $success['token'] = $user->createToken('MyApp')->plainTextToken;
-            $success['name'] = $user->name;
+        $validator = Validator::make($request->all(), [
+            'username'  =>  'required',
+            'password' => 'required',
+           // 'device_name' => 'required',
+        ]);
 
-            return $this->sendResponse($success, 'User login successfully.');
-        } else {
-            return $this->sendError('Unauthorised.', ['error' => 'Unauthorised']);
+         if ($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors());
         }
+
+        $user = User::where('username', $request->username)->first();
+
+        if(! $user || !Hash::check($request->password, $user->password)){
+            return $this->sendError('Validation Error' , 'The provided credential are incorrect');
+        }
+        
+     //   $success['token'] = $user->createToken($request->device_name)->plainTextToken;
+        $success['name'] = $user->name;
+        return $this->sendresponse($success, 'User register successfully');
+        
+        // if(Auth::attempt(['email' => $request->email, 'password' => $request->password])){
+        //     $user = Auth::user();
+        //     $success['token'] = $user->createToken('MyApp')->plainTextToken;
+        //     $success['name'] = $user->name;
+
+        //     return $this->sendResponse($success, 'User login successfully.');
+        // } else {
+        //     return $this->sendError('Unauthorised.', ['error' => 'Unauthorised']);
+        // }
     }
 }

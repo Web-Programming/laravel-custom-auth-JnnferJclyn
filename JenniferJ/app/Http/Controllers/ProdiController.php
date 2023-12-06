@@ -9,6 +9,12 @@ use Illuminate\Support\Facades\DB;
 class prodiController extends Controller
 {
     //
+    // public function index()
+    // {
+    //     $prodis = Prodi::all();
+    //     $this ->sendResponse($prodis, "data prodi");
+        
+    // }
     public function allJoinFacade(){
         $kampus = "Universitas Multi Data Palembang";
         $result = DB::select('select mahasiswas.*, prodis.nama as nama_prodi from prodis, mahasiswas where prodis.id = mahasiswas.prodi_id');
@@ -37,24 +43,38 @@ class prodiController extends Controller
 
         $this->authorize('create', Prodi::class);
 
-        $validateData = $request->validate([
-            'nama' => 'required|min:5|max:20',
-            'foto' => 'required|file|image|max:5000'
+        // $validateData = $request->validate([
+        //     'nama' => 'required|min:5|max:20',
+        //     'foto' => 'required|file|image|max:5000'
+        // ]);
+
+        // $ext = $request->foto->getClientOriginalExtension();
+
+        // $nama_file = "foto-" . time() . "." . $ext;
+        // $path = $request->foto->storeAs('public', $nama_file);
+
+
+        // // dump($validateData);
+        // // echo $validateData['nama'];
+        // $prodi = new Prodi(); //buat objek prodi
+        // $prodi->nama = $validateData['nama']; 
+        // $prodi->foto = $validateData['foto'];//simpna nilai input ke properti nama prodi
+        // $prodi->save();
+
+        $validasi = $request ->validate ([
+            'nama' => 'required | min:5 |max:20',
+            'foto' => 'required |file| image|max:5000'
         ]);
 
         $ext = $request->foto->getClientOriginalExtension();
-
         $nama_file = "foto-" . time() . "." . $ext;
-        $path = $request->foto->storeAs('public', $nama_file);
+        //nama file baru
+        $path = $request -> foto -> stroreAs('public, $nama_file');
 
-
-        // dump($validateData);
-        // echo $validateData['nama'];
-
-        $prodi = new Prodi(); //buat objek prodi
-        $prodi->nama = $validateData['nama']; 
-        $prodi->foto = $validateData['foto'];//simpna nilai input ke properti nama prodi
-        $prodi->save();
+        $prodi = new Prodi();
+        $prodi->nama = $validasi['nama'];
+        $prodi->foto = $nama_file;
+         $prodi->save();
 
 
         //return "Data prodi $prodi->nama berhasil disimpan ke database"; //tampilkan pesan berhasil
